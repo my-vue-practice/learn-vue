@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>条件与渲染</title>
+  <!-- animate.css -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.7.2/animate.min.css">
+  <style>
+    .todo-list-move {
+      transition: transform 1s;
+    }
+  </style>
+  <!-- lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+  <div id="root">
+    <h1>条件与渲染 & 动画</h1>
+
+    <h2>v-for</h2>
+    <transition-group name="todo-list" tag="ul" appear enter-active-class="animated jackInTheBox"
+      leave-active-class="animated hinge">
+      <li v-for="todo in todos" :key="todo.id">{{todo.text}}</li>
+    </transition-group>
+    <button @click="add">添加</button>
+    <button @click="remove">删除</button>
+    <button @click="shuffle">重排</button>
+
+    <hr>
+    <h2>v-if</h2>
+    <transition appear enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutDown">
+      <p v-if="seen">你看见我吗？</p>
+    </transition>
+  </div>
+
+  <script>
+    function getRandom() {
+      return Date.now() + Math.random().toString(36).substr(2, 4);
+    }
+    var vm = new Vue({
+      el: '#root',
+      data: {
+        seen: true,
+        todos: [{
+          id: getRandom(),
+          text: '吃饭'
+        }, {
+          id: getRandom(),
+          text: '睡觉'
+        }]
+      },
+      mounted: function () {
+        var scope = this;
+        console.log(scope === vm);
+        setTimeout(function () {
+          console.log(this === vm);
+          scope.seen = false;
+        }, 2000);
+      },
+      methods: {
+        add: function () {
+          this.todos.push({
+            id: getRandom(),
+            text: '看新闻' + Math.random().toString(36).substr(2, 2)
+          })
+        },
+        remove: function () {
+          this.todos.shift();
+        },
+        shuffle: function () {
+          // console.log(this.todos)
+          this.todos = _.shuffle(this.todos);
+        },
+      }
+    });
+  </script>
+</body>
+
+</html>
