@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>自定义指令</title>
+  <!-- lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    .empty {
+      background-color: yellow;
+      height: 1000px;
+    }
+
+    .empty2 {
+      background-color: greenyellow;
+      height: 200px;
+
+    }
+
+    .btn-wrap {
+      background-color: rgb(167, 185, 158);
+    }
+
+    .btn-wrap2 {
+      background-color: rgb(141, 168, 184);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root" v-page-expo="{entrytype:'page'}">
+    <h1>自定义指令</h1>
+    <div class="empty">empty</div>
+    <div class="btn-wrap" @click="taskClick" :data-sign="sign">
+      <div v-if="sign === 0" class="to-finished" v-entry-expo="{sign}"><button>去完成</button></div>
+      <div v-else-if="sign === 1" class="to-get" v-entry-expo="{sign}"><button>立即领取</button></div>
+      <div v-else="sign === 2" class="finished" v-entry-expo="{sign}"><span>已完成</span></div>
+    </div>
+    <hr>
+    <div class="btn-wrap2" @click="taskClick2" :data-sign="sign2">
+      <div v-if="status" class="btn" v-entry-expo="{sign: sign2}"><button>{{status[sign2]}}</button></div>
+    </div>
+    <div class="empty2"></div>
+  </div>
+
+  <script>
+
+    function getParentNode(node, cls) {
+      while (node && node.parentNode) {
+        let pNode = node.parentNode;
+        // console.log(pNode.className);
+        if (pNode.className.includes(cls)) {
+          return pNode;
+        }
+        node = pNode;
+      }
+    }
+
+    function sendLog(type, params) {
+      // console.group('*****发送日志*****')
+      console.log(`发送${type}日志：`, { entrytype: 'entry', ...params });
+      // console.groupEnd()
+    }
+
+    // bind和update一样的逻辑时，可以这样使用
+    // Vue.directive('appact', (el, binding) => {
+    //   // console.group('appact')
+    //   // console.log(el);
+    //   // console.log(binding);
+    //   // console.groupEnd();
+    //   sendLog.call(this, 'show', binding.value);
+    // });
+
+    // Vue.directive('appact', {
+    //   bind() {
+    //     // console.group('appact');
+    //     console.log('binded...')
+    //   },
+    //   inserted() {
+    //     console.log('inserted...')
+    //   },
+    //   update() {
+    //     console.log('update...')
+    //   },
+    //   componentUpdated() {
+    //     console.log('componentUpdated...')
+    //   },
+    //   unbind() {
+    //     console.log('unbind...')
+    //   }
+    // })
+
+    var vm = new Vue({
+      el: '#root',
+      data: function () {
+        return {
+          sign: 0, // 0 去完成，1 立即领取，2 已完成
+          sign2: 0, // 0 去完成，1 立即领取，2 已完成
+          status: ['去完成', '立即领取', '已完成']
+        }
+      },
+      methods: {
+        taskClick(el) {
+          // console.log('currentTarget>>', el.currentTarget)
+          // const pNode = getParentNode(el.target, 'btn-wrap');
+          // console.log(pNode.dataset);
+          this.clickLog({ ...el.currentTarget.dataset });
+          if (this.sign === 0) {
+            this.sign = 1
+          } else if (this.sign === 1) {
+            this.sign = 2
+          }
+        },
+        taskClick2(el) {
+          this.clickLog({ ...el.currentTarget.dataset });
+          if (this.sign2 === 0) {
+            this.sign2 = 1
+          } else if (this.sign2 === 1) {
+            this.sign2 = 2
+          }
+        },
+        clickLog(params) {
+          sendLog.call(this, 'click', params);
+        }
+      },
+      directives: {
+        pageExpo: {
+          bind(el, binding) {
+            // console.group('appact')
+            // console.log(el);
+            // console.log(binding);
+            // console.groupEnd();
+            sendLog.call(this, 'show', binding.value);
+          }
+        },
+        entryExpo(el, binding) {
+          // console.log(el, binding);
+          const { oldValue, value } = binding;
+          if (!_.isEqual(oldValue, value)) {
+            console.group('entryExpo')
+            sendLog.call(this, 'show', binding.value);
+            console.groupEnd();
+          }
+        }
+      }
+    });
+
+  </script>
+</body>
+
+</html>
