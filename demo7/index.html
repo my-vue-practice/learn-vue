@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>混入</title>
+  <!-- lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+  <div id="root">
+  </div>
+
+  <script>
+    // 基础
+    var myMixin = {
+      created: function () {
+        this.hello();
+      },
+      methods: {
+        hello: function () {
+          console.log('Hello from mixin!');
+        }
+      }
+    }
+    var Component = Vue.extend({
+      mixins: [myMixin]
+    });
+    var component = new Component();  // Hello from mixin!
+
+    // 当组件和混入对象含有同名选项时，这些选项将以恰当的方式进行“合并”。
+    // 比如，数据对象在内部会进行递归合并，并在发生冲突时以组件数据优先。
+    var mixin = {
+      data: function () {
+        return {
+          msg: 'hello',
+          foo: 'abc'
+        }
+      }
+    }
+
+    new Vue({
+      mixins: [mixin],
+      data: function () {
+        return {
+          msg: 'goodbye',
+          bar: 'def'
+        }
+      },
+      created: function () {
+        console.log(this.$data);  // {msg: 'goodbye', bar: 'def', foo: 'abc'}
+      }
+    });
+
+    // 同名钩子函数将合并为一个数组，因此都将被调用。另外，混入对象的钩子将在组件自身钩子之前调用。
+    var mixin2 = {
+      created: function () {
+        console.log('混入对象钩子created！');
+      }
+    }
+
+    new Vue({
+      mixins: [mixin2],
+      created: function () {
+        console.log('组件钩子created！');
+      }
+    })
+    // 混入对象钩子created！
+    // 组件钩子created！
+
+    var mixin3 = {
+      methods: {
+        m0: function () {
+          console.log('call mixin method m0');
+        },
+        m1: function () {
+          console.log('call mixin method m1');
+        }
+      }
+    }
+
+    var vm = new Vue({
+      mixins: [mixin3],
+      methods: {
+        m1: function () {
+          console.log('call component method m1');
+        }
+      }
+    })
+
+    vm.m0();  // call mixin method m0
+    vm.m1();  // call component method m1
+
+    // 全局混入
+    Vue.mixin({
+      created: function () {
+        console.log(this.$data);
+      }
+    })
+
+    new Vue({
+      data: function () {
+        return {
+          name: 'Cleam Lee'
+        }
+      }
+    })
+
+    // {name: "Cleam Lee"}
+
+
+    // 高级用法：自定义选项合并策略：向 Vue.config.optionMergeStrategies 添加一个函数
+
+
+  </script>
+</body>
+
+</html>
