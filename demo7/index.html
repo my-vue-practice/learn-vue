@@ -87,6 +87,9 @@
     var vm = new Vue({
       mixins: [mixin3],
       methods: {
+        // m0: function () {  // 同名method会覆盖混入对象中method。
+        //   console.log('call component method m0');
+        // },
         m1: function () {
           console.log('call component method m1');
         }
@@ -99,7 +102,7 @@
     // 全局混入
     Vue.mixin({
       created: function () {
-        console.log(this.$data);
+        console.log(this, this.$data);
       }
     })
 
