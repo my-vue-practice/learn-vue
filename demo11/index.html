@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>深入响应式</title>
+  <!-- lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <h1>深入响应式</h1>
+    <p>属性A: {{a}}</p>
+    <hr>
+    <button @click='handleBtnClick'>添加&更新年龄</button>
+    <p>姓名: {{person.name || ''}}</p>
+    <p>年龄: {{person.age || ''}}</p>
+    <hr>
+    <button @click='handleListBtnClick'>给数组添加一项</button>
+    <dl>
+      <dt v-for="(name, index) in list" :key='index'>{{name}}</dt>
+    </dl>
+  </div>
+
+  <script>
+    var vm = new Vue({
+      el: '#root',
+      data: {
+        a: 1,
+        person: {
+          name: 'lzg'
+        },
+        list: ['张三', '李四', '王五', '赵六']
+      },
+      methods: {
+        handleBtnClick() {
+          // this.person.age = 30;  // 非响应式，不会触发页面更新
+          // this.$set(this.person, 'age', 30);   // 响应式
+          this.person = { // 响应式
+            ...this.person,
+            age: Math.ceil(Math.random() * 3 + 4)
+          }
+        },
+        handleListBtnClick() {
+          var random = Math.ceil(Math.random() * 10);
+          var name = '钱' + random;
+          this.list.push(name);   // 响应式，vue重写了push方法
+          // this.list[4] = name;  // 非响应式，所以不能这样去添加数组元素
+          // this.list[0] = name;  // 非响应式，所以不能这样去修改数组
+        }
+      },
+    })
+  </script>
+</body>
+
+</html>
