@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>弹窗组件（v-model的使用）</title>
+  <!-- lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    .dialog-wrap {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 99;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .dialog {
+      width: 300px;
+      min-height: 100px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 10px;
+      box-shadow: 0 5px 10px #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <zg-dialog v-model="show"></zg-dialog>
+    <button @click="showDialog">显示弹窗</button>
+  </div>
+
+  <script>
+    Vue.component('zg-dialog', {
+      name: 'zg-dialog',
+      data() {
+        return {
+          showDialog: false
+        }
+      },
+      props: {
+        value: {
+          type: Boolean,
+          default: false
+        },
+      },
+      watch: {
+        value(newValue, oldValue) {
+          this.showDialog = newValue;
+        },
+        showDialog(newValue, oldValue) {
+          /*使用了v-model的组件会自动监听 input 事件, 
+            * 并把这个input事件所携带的值 传递给v-model所绑定的属性,
+            * 这样组件内部的值就给到了父组件了
+            */
+          this.$emit('input', newValue);//传值给父组件, 让父组件监听到这个变化
+        }
+      },
+      template: `
+      <div class="dialog-wrap" v-show="showDialog">
+        <div class="dialog">
+          <div class="header">
+            <h2>我是标题</h2>
+          </div>
+          <div class="content">
+            <p>我是内容</p>
+          </div>
+          <div class="footer">
+            <button @click="showDialog = false">关闭</button>
+          </div>
+        </div>
+      </div>
+      `
+    })
+
+    new Vue({
+      el: '#root',
+      data() {
+        return {
+          show: false
+        }
+      },
+      methods: {
+        showDialog() {
+          this.show = true;
+        }
+      },
+    })
+  </script>
+</body>
+
+</html>
