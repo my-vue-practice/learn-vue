@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>渲染函数 & JSX</title>
+  <title>自定义组件 & v-model</title>
   <!-- lodash -->
   <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
   <!-- 开发环境版本，包含了有帮助的命令行警告 -->
@@ -16,20 +16,114 @@
       width: 100%;
       height: 100%;
     }
+
+    .input {
+      padding: 15px;
+      border: 2px dashed yellowgreen;
+      background-color: lemonchiffon;
+    }
   </style>
 </head>
 
 <body>
   <div id="root">
+    <my-input v-model="inputValue"></my-input>
+    <p>{{inputValue}}</p>
+    <br>
+    <my-input v-model="inputValue2"></my-input>
+    <p>{{inputValue2}}</p>
+
+    <br>
+    <br>
+
+    <my-radio v-model="radio" label="male">男</my-radio>
+    <my-radio v-model="radio" label="female">女</my-radio>
+    {{radio}}
+
   </div>
 
   <script>
+    var MyInput = Vue.component('MyInput', {
+      template: `
+        <div class="input">
+          <h3>自定义input组件</h3>
+          <input type="text" v-bind:value="value" v-on:input="handleInput" />
+        </div>
+      `,
+      // model: {
+      //   prop: 'v',
+      //   event: 'i'
+      // },
+      props: {
+        value: {
+          type: String,
+          default: ''
+        },
+      },
+      methods: {
+        handleInput(e) {
+          this.$emit('input', e.target.value);
+        }
+      },
+    });
 
-    const child = Vue.component()
+    var MyRadio = Vue.component('MyRadio', {
+      // <slot/> === <template v-slot="default"></template>
+      template: `
+        <div class="radio">
+          <label>
+            <input ref="radio" type="radio" v-model="model" :value="label" />
+            <slot/>
+          </label>
+        </div>
+      `,
+      props: {
+        value: '',
+        label: {}
+      },
+      created() {
+        console.log(this.value);
+      },
+      computed: {
+        model: {
+          set(v) {
+            // console.log(v === this.label, this.$refs.radio.checked);
+            this.$emit('input', v);
+          },
+          get() {
+            return this.value;
+          }
+        }
+      },
+      watch: {
+        value(newValue, oldValue) {
+          console.log(this.label, newValue, oldValue);
+        }
+      },
+    });
+
+    // var MyRadioGroup = Vue.component('MyRadioGroup', {
+    //   template: `
+    //     <div class="radio-group">
+
+    //     </div>
+    //   `
+    // })
 
     new Vue({
-      el: '#root'
-    })
+      el: '#root',
+      components: {
+        MyInput,
+        MyRadio
+      },
+      data() {
+        return {
+          inputValue: 'lizhigao',
+          inputValue2: 'liqingquan',
+          radio: 'male'
+        }
+      }
+    });
   </script>
 </body>
 
