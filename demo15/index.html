@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>自定义组件 & v-model</title>
+  <!-- lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    .input {
+      padding: 15px;
+      border: 2px dashed yellowgreen;
+      background-color: lemonchiffon;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <h3>v-model在非表单input组件应用</h3>
+    <my-comp v-model="compValue1"></my-comp>
+    <p>父组件：{{compValue1}}</p>
+    <br>
+    <my-comp v-model="compValue2"></my-comp>
+    <p>父组件：{{compValue2}}</p>
+  </div>
+
+  <script>
+    var MyComp = Vue.component('MyComp', {
+      template: `
+        <div class="input">
+          <h3>自定义comp组件</h3>
+          <p>初始值：{{v}}</p>
+          <button @click="minus">减1</button>
+          <button @click="add">加1</button>
+        </div>
+      `,
+      // event 自定义为 change，也可以不声明model，直接用默认的input事件this.$emit('input', value);
+      model: {
+        prop: 'value',
+        event: 'change'
+      },
+      props: {
+        value: {
+          type: Number,
+          default: 0
+        },
+      },
+      mounted() {
+        console.log('[value]', this.value);;
+      },
+      computed: {
+        v() {
+          return this.value;
+        }
+      },
+      methods: {
+        minus() {
+          this.$emit('change', this.value - 1);
+        },
+        add() {
+          this.$emit('change', this.value + 1);
+        }
+      },
+    });
+
+    new Vue({
+      el: '#root',
+      components: {
+        MyComp,
+      },
+      data() {
+        return {
+          compValue1: 10,
+          compValue2: 0,
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

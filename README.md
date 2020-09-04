@@ -13,6 +13,7 @@ vue 基础学习巩固 - 温故而知新，可以为师矣！
 - demo9：渲染函数 & JSX
 - demo10：
 - demo11：深入响应式
-- demo12：自定义弹窗组件（v-model的使用）
+- demo12：自定义弹窗组件（v-model 的使用）
 - demo13：自定义插件
 - demo14：响应式
+- demo15：model & v-model 的使用
