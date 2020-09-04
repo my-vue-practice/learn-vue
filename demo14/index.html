@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>插件</title>
+  <!-- lodash -->
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="root"></div>
+  <p id="result"></p>
+
+  <script>
+    // var obj = {
+    //   name: 'Lily'
+    // };
+
+    // var Reactive = Object.defineProperty(obj, 'name', {
+    //   set: function (v) {
+    //     console.log(v);
+        
+    //   },
+    //   get: function () {
+    //     // console.log(this);
+    //     return this._prop1;
+    //   }
+    // });
+
+    // console.log(Reactive.prop1); // getter
+    // Reactive.prop1 = 't1';  // setter
+    // console.log(Reactive.prop1);  // getter
+
+
+    var handler = {
+      get: function (target, prop) {
+        console.log('[getter]', target, prop);
+        return target[prop];
+      },
+      set: function (target, prop, value) {
+        console.log('[setter]', target, prop, value);
+        target[prop] = value;
+      }
+    };
+    var person = {
+      name: 'zs'
+    };
+    var personProxy = new Proxy(person, handler);
+
+    personProxy.name = 'ls';
+
+    console.log(personProxy.name);
+
+    personProxy.age = 18;
+
+    console.log(personProxy.test);
+
+
+  </script>
+</body>
+
+</html>
