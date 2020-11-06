@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据响应式</title>
+</head>
+
+<body>
+  <div id="app">
+    <!-- {{msg}} -->
+    <p>随机数字：<span id="view1"></span></p>
+    <button id="opt">改变随机数</button>
+
+    <p>自增数字：<span id="view2"></span></p>
+
+    <h3>列表</h3>
+    <ul id="list">
+    </ul>
+  </div>
+
+  <script>
+    let obj = {
+      num1: 0,
+      num2: 0,
+      list: [{ id: 1, name: '张三' }, { id: 2, name: '李四' }]
+    };
+    // 视图（初始化和）更新方法
+    function update() {
+      // （初始化和）更新view1
+      document.getElementById('view1').textContent = obj.num1;
+      // （初始化和）更新view2
+      document.getElementById('view2').textContent = obj.num2;
+
+      // （初始化和）更新list
+      const list = document.getElementById('list');
+      const lis = [];
+      obj.list.forEach(item => {
+        const li = document.createElement('li');
+        li.setAttribute('id', item.id);
+        li.textContent = item.name;
+        lis.push(li);
+      })
+      list.innerHTML = '';
+      lis.forEach(li => {
+        list.appendChild(li);
+      })
+    }
+    const optDom = document.getElementById('opt');
+    // 点击按钮操作数据改变
+    optDom.addEventListener('click', () => {
+      // 改变数据。
+      obj.num1 = (Math.random() * 50).toFixed();
+      obj.num2++;
+
+      obj.list.push({ id: 3, name: '王五' })
+    });
+
+    function defineReactive(obj, key, val) {
+      // 利用闭包保存setter的值，getter的时候直接读取闭包中的value
+      let value = val;
+      Object.defineProperty(obj, key, {
+        set(newVal) {
+          value = newVal;
+          update();
+        },
+        get() {
+          return value;
+        }
+      })
+    }
+    // 数据响应式处理
+    // defineReactive(obj, 'num1', obj['num1']);
+    // defineReactive(obj, 'num2', obj['num2']);
+    // 批量进行数据响应式处理
+    function reactive(obj) {
+      Object.keys(obj).forEach(k => {
+        defineReactive(obj, k, obj[k])
+      })
+    }
+    reactive(obj)
+
+  </script>
+</body>
+
+</html>
